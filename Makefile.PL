@@ -11,11 +11,8 @@ build_requires 'Test::Deep' => '0.096';
 
 requires 'Crypt::Rijndael' => 0;
 requires 'Digest::SHA256'  => 0;
-requires 'Getopt::Long'    => 0;
 requires 'Scalar::Util'    => 0;
 requires 'Time::HiRes'     => 0;
-
-install_script 'bin/pppp';
 
 license 'perl';
 perl_version '5.008';
