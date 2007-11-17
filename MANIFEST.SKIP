@@ -13,7 +13,6 @@
 # MB generated files and dirs
 ^Build$
 ^_build/
-^inc/
 ^misc/
 
 # Temp, old and emacs backup files.

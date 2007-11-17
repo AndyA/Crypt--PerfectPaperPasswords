@@ -5,13 +5,12 @@ use strict;
 use Carp;
 use Crypt::Rijndael;
 use Digest::SHA256;
-use Math::BigInt;
 use Time::HiRes qw(time);
 use Scalar::Util qw(refaddr);
 
 =head1 NAME
 
-Crypt::PerfectPaperPasswords - Steve Gibson' Perfect Paper Passwords
+Crypt::PerfectPaperPasswords - Steve Gibson's Perfect Paper Passwords
 
 =head1 VERSION
 
@@ -224,10 +223,7 @@ Get an array of passcodes.
     my @passcodes = $ppp->passcodes(1, 70, $seq_key);
 
 The first two arguments are the starting position (1 .. n) and the
-number of passcodes to generate. The starting position may be a large
-number - in which case it should be passed as a decimal string.
-
-    my @pc = $ppp->passcodes('9999999999999999999999', 100, $seq_key);
+number of passcodes to generate.
 
 Returns an array of strings containing the generated passcodes.
 
@@ -242,10 +238,8 @@ sub passcodes {
 
     my @passcodes = ();
 
-    my $index = Math::BigInt->new( $first );
-
-    croak "Starting index is 1" if $index <= 0;
-    $index--;
+    croak "Starting index is 1" if $first <= 0;
+    $first--;
 
     my $codelen = $self->codelen;
 
@@ -253,7 +247,7 @@ sub passcodes {
         Crypt::Rijndael::MODE_ECB );
 
     while ( @passcodes < $count ) {
-        my $pos     = $index * 8 * $codelen;
+        my $pos     = $first * 8 * $codelen;
         my $n       = $pos / 128;
         my $offset  = $pos % 128;
         my $desired = int( $offset / 8 ) + $codelen;
@@ -277,7 +271,7 @@ sub passcodes {
             $codelen
           );
 
-        $index++;
+        $first++;
     }
 
     return @passcodes;
