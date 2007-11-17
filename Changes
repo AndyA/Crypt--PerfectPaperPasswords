@@ -8,3 +8,6 @@ Revision history for Crypt-PerfectPaperPasswords
 
 0.03    2007-11-17
         - Removed BigInt silliness
+
+0.04    2007-11-17
+        - Sigh. Fixed t/000-load.t
