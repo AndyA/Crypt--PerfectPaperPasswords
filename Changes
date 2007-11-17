@@ -6,4 +6,5 @@ Revision history for Crypt-PerfectPaperPasswords
 0.02    2007-11-17
         - Oops - included missing MANIFEST items
 
-0.03
+0.03    2007-11-17
+        - Removed BigInt silliness
