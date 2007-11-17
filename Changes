@@ -1,5 +1,9 @@
 Revision history for Crypt-PerfectPaperPasswords
 
-0.01    Fri Nov 16 18:12:35 2007
+0.01    2007-11-17
         - Initial release.
 
+0.02    2007-11-17
+        - Oops - included missing MANIFEST items
+
+0.03
