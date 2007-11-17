@@ -14,11 +14,11 @@ Crypt::PerfectPaperPasswords - Steve Gibson's Perfect Paper Passwords
 
 =head1 VERSION
 
-This document describes Crypt::PerfectPaperPasswords version 0.04
+This document describes Crypt::PerfectPaperPasswords version 0.06
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.06';
 
 =head1 SYNOPSIS
 
@@ -71,9 +71,8 @@ The size of the alphabet need not be a power of two.
 
 =item C<codelen>
 
-The number of raw bytes in each passcode. This setting isn't especially
-useful: it can't currently be set to more than 4 and setting it to less
-than 3 is pretty pointless. Defaults to 3.
+The number of raw bytes in each passcode. You must have L<Math::BigInt>
+installed to handle values greater than 4.
 
 =back
 
@@ -117,8 +116,13 @@ than 3 is pretty pointless. Defaults to 3.
 
         my $codelen = delete $args{codelen};
 
-        croak "Code length must be between 2 and 4"
-          if $codelen < 2 || $codelen > 4;
+        croak "Code length must be between 1 and 32"
+          if $codelen < 1 || $codelen > 32;
+
+        if ( $codelen > 4 && !_got_bigint() ) {
+            croak
+              "Please install Math::BigInt to handle code lengths > 4";
+        }
 
         my $self = bless {
             alphabet => $alphabet,
@@ -241,6 +245,8 @@ sub passcodes {
     croak "Starting index is 1" if $first <= 0;
     $first--;
 
+    $first *= $count;
+
     my $codelen = $self->codelen;
 
     my $rij = Crypt::Rijndael->new( pack( 'H*', $sequence ),
@@ -262,14 +268,8 @@ sub passcodes {
         }
 
         push @passcodes,
-          $self->_alpha_encode(
-            unpack(
-                'V',
-                substr( $raw, $offset / 8, $codelen )
-                  . "\0" x ( 4 - $codelen )
-            ),
-            $codelen
-          );
+          $self->_alpha_encode( substr( $raw, $offset / 8, $codelen ),
+            $codelen );
 
         $first++;
     }
@@ -277,8 +277,32 @@ sub passcodes {
     return @passcodes;
 }
 
+{
+    my $GOT_BIGINT;
+
+    sub _got_bigint {
+        defined $GOT_BIGINT and return $GOT_BIGINT;
+        return $GOT_BIGINT = eval 'use Math::BigInt; 1' ? 1 : 0;
+    }
+}
+
 sub _alpha_encode {
-    my ( $self, $code, $bytes ) = @_;
+    my ( $self, $data, $bytes ) = @_;
+    my $code;
+
+    if ( _got_bigint() && $bytes > 4 ) {
+        # Make a big hex constant
+        $code = Math::BigInt->new(
+            '0x'
+              . join( '',
+                map { sprintf( "%02x", ord( $_ ) ) } reverse split //,
+                $data )
+        );
+    }
+    else {
+        $code = unpack( 'V', $data . "\0" x ( 4 - length $data ) );
+    }
+
     my $limit = 2**( $bytes * 8 );
 
     my @alphabet   = split //, $self->alphabet;
@@ -308,11 +332,12 @@ L<Crypt::Rijndael>
 
 L<Digest::SHA256>
 
-L<Math::BigInt>
-
 L<Scalar::Util>
 
 L<Time::HiRes>
+
+L<Math::BigInt> (optional)
+
 
 =head1 INCOMPATIBILITIES
 
