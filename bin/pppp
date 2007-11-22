@@ -45,22 +45,21 @@ Commands
 
 Generated a PPP card
 
-    pppp --passphrase something card 1
-    $ perl -Ilib bin/pppp --passphrase Something card 1
+    $ pppp --passphrase something card 1
     Perfect Paper Passwords [1]
     =======================================
           A    B    C    D    E    F    G  
     =======================================
-       1 !MCm r8+J Kx@= 33k9 nJMM 74Fe nMfV
-       2 s2fX gRAH @y5L oSiM 6cPT MP+4 MCKf
-       3 GDHq #T#9 2tei #gdC S#8= JFKT p@5K
-       4 jvBp Df#7 :aqM P4bz :7:g kMVC M8qx
-       5 CKjT AWcf !mkV Ebpt 2M=E XPaj 2AVN
-       6 kxYn nG98 Ev== #dm# o9vc NWFi 8UwE
-       7 FHak HNZ5 %bet Ye?8 P9Ab pmd: Cycj
-       8 xgeg KsND avz? tWpZ 2Rsp B%4P F2em
-       9 MrAb 7L:Y w=h+ MTM8 TLk3 taVL 2+y:
-      10 x26X oV7r RHZ# nSZ! FDFm p@im :==F
+       1 2mjF x?Zx WfrV BcYh R6jx R4sf XUjA
+       2 L@Np edmm 4y?i 8xxD UYEo ak9f a?2y
+       3 c=xr Nop6 Ks%u ZGMf sN7F pR8+ xTqw
+       4 6j#J J@t# o7DC :dbA ?ko= VZJD YhGG
+       5 =wtc nw#g !tqG S6e@ ppUM EnRm u2A+
+       6 8NR= YMKR y35j 7%AA Fe%w !gTd T#9T
+       7 qqXr Z4Da BvS% U8is Wx3k a6?w cNwE
+       8 Er=D PE!N ZUfw dwy! LPWd 49e7 Zq68
+       9 xbxn #aZX RAw: frm9 R%nf 3?N= JBPZ
+      10 tZ54 ?mki iZoW mtCk SPj= KtFg PUc!
     =======================================
 
 =head2 C<newkey>
@@ -78,7 +77,7 @@ Copyright (c) 2007, Andy Armstrong C<< <andy@hexten.net> >>.
 Original Perfect Paper Passwords implementation by Steve Gibson. More details
 here:
 
-    L<http://www.grc.com/ppp.htm>
+    http://www.grc.com/ppp.htm
 
 =head1 LICENCE AND COPYRIGHT
 
