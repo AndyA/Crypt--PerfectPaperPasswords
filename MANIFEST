@@ -12,3 +12,4 @@ t/app.t
 t/conformance.t
 t/pod-coverage.t
 t/pod.t
+META.yml

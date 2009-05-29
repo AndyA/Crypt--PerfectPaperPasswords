@@ -79,62 +79,61 @@ installed to handle values greater than 4.
 =cut
 
 {
-    my %DEFAULT_ARGS;
+  my %DEFAULT_ARGS;
 
-    BEGIN {
-        %DEFAULT_ARGS = (
-            alphabet => '23456789!@#%+=:?'
-              . 'abcdefghijkmnopqrstuvwxyz'
-              . 'ABCDEFGHJKLMNPRSTUVWXYZ',
-            codelen => 3,
-        );
+  BEGIN {
+    %DEFAULT_ARGS = (
+      alphabet => '23456789!@#%+=:?'
+       . 'abcdefghijkmnopqrstuvwxyz'
+       . 'ABCDEFGHJKLMNPRSTUVWXYZ',
+      codelen => 3,
+    );
 
-        for my $method ( keys %DEFAULT_ARGS ) {
-            no strict 'refs';
-            *{ __PACKAGE__ . '::' . $method } = sub {
-                my $self = shift;
-                croak "Can't set $method" if @_;
-                return $self->{$method};
-            };
-        }
+    for my $method ( keys %DEFAULT_ARGS ) {
+      no strict 'refs';
+      *{ __PACKAGE__ . '::' . $method } = sub {
+        my $self = shift;
+        croak "Can't set $method" if @_;
+        return $self->{$method};
+      };
+    }
+  }
+
+  sub new {
+    my $class = shift;
+    my %args = ( %DEFAULT_ARGS, @_ );
+
+    my $alphabet = delete $args{alphabet};
+
+    croak "Alphabet must be at least two characters long"
+     unless length( $alphabet ) >= 2;
+
+    my %got = ();
+    $got{$_}++ for split //, $alphabet;
+    my @dups = sort grep { $got{$_} > 1 } keys %got;
+    croak "Duplicate characters in alphabet: ", join( ', ', @dups )
+     if @dups;
+
+    my $codelen = delete $args{codelen};
+
+    croak "Code length must be between 1 and 32"
+     if $codelen < 1 || $codelen > 32;
+
+    if ( $codelen > 4 && !_got_bigint() ) {
+      croak "Please install Math::BigInt to handle code lengths > 4";
     }
 
-    sub new {
-        my $class = shift;
-        my %args = ( %DEFAULT_ARGS, @_ );
+    my $self = bless {
+      alphabet => $alphabet,
+      codelen  => $codelen,
+      seed     => time(),
+    }, $class;
 
-        my $alphabet = delete $args{alphabet};
+    croak "Unknown options: ", join( ', ', sort keys %args ), "\n"
+     if keys %args;
 
-        croak "Alphabet must be at least two characters long"
-          unless length( $alphabet ) >= 2;
-
-        my %got = ();
-        $got{$_}++ for split //, $alphabet;
-        my @dups = sort grep { $got{$_} > 1 } keys %got;
-        croak "Duplicate characters in alphabet: ", join( ', ', @dups )
-          if @dups;
-
-        my $codelen = delete $args{codelen};
-
-        croak "Code length must be between 1 and 32"
-          if $codelen < 1 || $codelen > 32;
-
-        if ( $codelen > 4 && !_got_bigint() ) {
-            croak
-              "Please install Math::BigInt to handle code lengths > 4";
-        }
-
-        my $self = bless {
-            alphabet => $alphabet,
-            codelen  => $codelen,
-            seed     => time(),
-        }, $class;
-
-        croak "Unknown options: ", join( ', ', sort keys %args ), "\n"
-          if keys %args;
-
-        return $self;
-    }
+    return $self;
+  }
 }
 
 =head2 C<< alphabet >>
@@ -158,14 +157,14 @@ Generate a sequence key from a passphrase.
 =cut
 
 sub sequence_from_key {
-    my $self = shift;
-    my $key  = shift;
+  my $self = shift;
+  my $key  = shift;
 
-    my $sha = Digest::SHA256::new( 256 );
-    $sha->add( $key );
-    my $digest = $sha->hexdigest;
-    $digest =~ s/\s+//g;
-    return $digest;
+  my $sha = Digest::SHA256::new( 256 );
+  $sha->add( $key );
+  my $digest = $sha->hexdigest;
+  $digest =~ s/\s+//g;
+  return $digest;
 }
 
 =head2 C<< random_sequence >>
@@ -179,8 +178,8 @@ Relies on the output of C<random_data> for its entropy.
 =cut
 
 sub random_sequence {
-    my $self = shift;
-    return $self->sequence_from_key( $self->random_data );
+  my $self = shift;
+  return $self->sequence_from_key( $self->random_data );
 }
 
 =head2 C<< random_data >>
@@ -213,11 +212,11 @@ and provding a C<random_data> that reads from /dev/urandom.
 =cut
 
 sub random_data {
-    my $self = shift;
-    return join( ':',
-        time(), $self->{seed}++,
-        refaddr( $self ),
-        refaddr( \my $dummy ), $$ );
+  my $self = shift;
+  return join( ':',
+    time(), $self->{seed}++,
+    refaddr( $self ),
+    refaddr( \my $dummy ), $$ );
 }
 
 =head2 C<< passcodes >>
@@ -234,89 +233,88 @@ Returns an array of strings containing the generated passcodes.
 =cut
 
 sub passcodes {
-    croak "passcodes requires 3 args" unless @_ == 4;
-    my ( $self, $first, $count, $sequence ) = @_;
+  croak "passcodes requires 3 args" unless @_ == 4;
+  my ( $self, $first, $count, $sequence ) = @_;
 
-    croak "Sequence must be 64 characters long"
-      unless length( $sequence ) == 64;
+  croak "Sequence must be 64 characters long"
+   unless length( $sequence ) == 64;
 
-    my @passcodes = ();
+  my @passcodes = ();
 
-    croak "Starting index is 1" if $first <= 0;
-    $first--;
+  croak "Starting index is 1" if $first <= 0;
+  $first--;
 
-    $first *= $count;
+  $first *= $count;
 
-    my $codelen = $self->codelen;
+  my $codelen = $self->codelen;
 
-    my $rij = Crypt::Rijndael->new( pack( 'H*', $sequence ),
-        Crypt::Rijndael::MODE_ECB );
+  my $rij = Crypt::Rijndael->new( pack( 'H*', $sequence ),
+    Crypt::Rijndael::MODE_ECB );
 
-    while ( @passcodes < $count ) {
-        my $pos     = $first * 8 * $codelen;
-        my $n       = $pos / 128;
-        my $offset  = $pos % 128;
-        my $desired = int( $offset / 8 ) + $codelen;
-        my $raw     = '';
+  while ( @passcodes < $count ) {
+    my $pos     = $first * 8 * $codelen;
+    my $n       = $pos / 128;
+    my $offset  = $pos % 128;
+    my $desired = int( $offset / 8 ) + $codelen;
+    my $raw     = '';
 
-        for my $j ( 0 .. 1 ) {
-            my $n_bits = pack( "V*", "$n" );    # $n_bits .= ;
-            $raw .= $rij->encrypt(
-                $n_bits . "\0" x ( 16 - length( $n_bits ) % 16 ) );
-            last if length( $raw ) >= $desired;
-            $n++;
-        }
-
-        push @passcodes,
-          $self->_alpha_encode( substr( $raw, $offset / 8, $codelen ),
-            $codelen );
-
-        $first++;
+    for my $j ( 0 .. 1 ) {
+      my $n_bits = pack( "V*", "$n" );    # $n_bits .= ;
+      $raw .= $rij->encrypt(
+        $n_bits . "\0" x ( 16 - length( $n_bits ) % 16 ) );
+      last if length( $raw ) >= $desired;
+      $n++;
     }
 
-    return @passcodes;
+    push @passcodes,
+     $self->_alpha_encode( substr( $raw, $offset / 8, $codelen ),
+      $codelen );
+
+    $first++;
+  }
+
+  return @passcodes;
 }
 
 {
-    my $GOT_BIGINT;
+  my $GOT_BIGINT;
 
-    sub _got_bigint {
-        defined $GOT_BIGINT and return $GOT_BIGINT;
-        return $GOT_BIGINT = eval 'use Math::BigInt; 1' ? 1 : 0;
-    }
+  sub _got_bigint {
+    defined $GOT_BIGINT and return $GOT_BIGINT;
+    return $GOT_BIGINT = eval 'use Math::BigInt; 1' ? 1 : 0;
+  }
 }
 
 sub _alpha_encode {
-    my ( $self, $data, $bytes ) = @_;
-    my $code;
+  my ( $self, $data, $bytes ) = @_;
+  my $code;
 
-    if ( _got_bigint() && $bytes > 4 ) {
-        # Make a big hex constant
-        $code = Math::BigInt->new(
-            '0x'
-              . join( '',
-                map { sprintf( "%02x", ord( $_ ) ) } reverse split //,
-                $data )
-        );
-    }
-    else {
-        $code = unpack( 'V', $data . "\0" x ( 4 - length $data ) );
-    }
+  if ( _got_bigint() && $bytes > 4 ) {
+    # Make a big hex constant
+    $code = Math::BigInt->new(
+      '0x'
+       . join( '',
+        map { sprintf( "%02x", ord( $_ ) ) } reverse split //, $data )
+    );
+  }
+  else {
+    $code = unpack( 'V', $data . "\0" x ( 4 - length $data ) );
+  }
 
-    my $limit = 2**( $bytes * 8 );
+  my $limit = 2**( $bytes * 8 );
 
-    my @alphabet   = split //, $self->alphabet;
-    my $code_space = @alphabet;
-    my @out        = ();
-    my $max        = 1;
+  my @alphabet   = split //, $self->alphabet;
+  my $code_space = @alphabet;
+  my @out        = ();
+  my $max        = 1;
 
-    while ( $max < $limit ) {
-        push @out, $alphabet[ $code % $code_space ];
-        $code = int( $code / $code_space );
-        $max *= $code_space;
-    }
+  while ( $max < $limit ) {
+    push @out, $alphabet[ $code % $code_space ];
+    $code = int( $code / $code_space );
+    $max *= $code_space;
+  }
 
-    return join '', @out;
+  return join '', @out;
 }
 
 1;

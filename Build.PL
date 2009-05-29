@@ -19,9 +19,9 @@ my $build = MyBuilder->new(
     'Test::More'      => 0,
     'Time::HiRes'     => 0
   },
-  script_files       => 'bin/pppp',
-  add_to_cleanup     => [ 'Crypt-PerfectPaperPasswords-*' ],
-  license            => 'perl',
+  script_files   => 'bin/pppp',
+  add_to_cleanup => ['Crypt-PerfectPaperPasswords-*'],
+  license        => 'perl',
 );
 
 $build->create_build_script;
