@@ -14,11 +14,11 @@ Crypt::PerfectPaperPasswords - Steve Gibson's Perfect Paper Passwords
 
 =head1 VERSION
 
-This document describes Crypt::PerfectPaperPasswords version 0.06
+This document describes Crypt::PerfectPaperPasswords version 0.07
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 SYNOPSIS
 
