@@ -4,7 +4,6 @@ Changes
 inc/MyBuilder.pm
 lib/App/PerlPPP.pm
 lib/Crypt/PerfectPaperPasswords.pm
-Makefile.PL
 MANIFEST
 META.yml
 README
