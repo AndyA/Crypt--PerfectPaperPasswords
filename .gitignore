@@ -1,0 +1,13 @@
+*.tar.gz
+.lwpcookies
+.prove
+Build
+Crypt-PerfectPaperPasswords-*
+Makefile
+Makefile.old
+Session.vim
+_build*
+blib*
+cover_db
+inc
+pm_to_blib*
