@@ -1,21 +1,19 @@
 \.tmproj$
 \.tar\.gz$
 \B\.svn\b
+\B\.git\b
+\B\.gitignore\b
 ^\.cvsignore
-
-# Makemaker generated files and dirs.
 ^MANIFEST\.
 ^Makefile$
+^Build$
 ^andy/
+^misc/
+^incoming/
+^t/disabled/
 ^blib/
 ^pm_to_blib$
-
-# MB generated files and dirs
-^Build$
 ^_build/
-^misc/
-
-# Temp, old and emacs backup files.
 ~$
 ^\.DS_Store
 \.(old|tmp|bak)$
@@ -25,3 +23,6 @@
 ^try[.]store$
 ^TODO$
 \.swp$
+^\.prove$
+^Session\.vim$
+Crypt-PerfectPaperPasswords-*

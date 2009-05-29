@@ -6,7 +6,6 @@ eval 'use ExtUtils::MakeMaker::Coverage';
 
 WriteMakefile(
   ( MM->can( 'signature_target' ) ? ( SIGN => 1 ) : () ),
-  license( 'perl' ),
   NAME          => 'Crypt::PerfectPaperPasswords',
   AUTHOR        => 'Andy Armstrong <andy@hexten.net>',
   VERSION_FROM  => 'lib/Crypt/PerfectPaperPasswords.pm',
